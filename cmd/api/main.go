@@ -1,17 +1,16 @@
 package main
 
 import (
-	"log"
-
 	"github.com/irvanrifai/go-clean-architecture/database"
-	"github.com/joho/godotenv"
+	"github.com/irvanrifai/go-clean-architecture/pkg"
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
+	pkg.InitLog()
+	defer pkg.ZapLog.Sync()
+	
 	database.ConnectDB()
-	db := database.DB
+	// db := database.DB
+
+	pkg.ZapLog.Info("Connected")
 }

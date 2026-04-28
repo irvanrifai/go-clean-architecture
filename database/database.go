@@ -1,40 +1,53 @@
 package database
 
 import (
+	"context"
 	"fmt"
-	"log"
-	"os"
+	"time"
 
-	"github.com/joho/godotenv"
+	"github.com/irvanrifai/go-clean-architecture/config"
+	"github.com/irvanrifai/go-clean-architecture/pkg"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-var DB *gorm.DB
-
-func ConnectDB() {
-	// Load .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	// Ambil data dari env
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_SSLMODE"),
-		os.Getenv("DB_TIMEZONE"),
+// Provider untuk MySQL
+func NewMySQLDB(cfg *config.Config) *gorm.DB {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		cfg.Database.Mysql.User,
+		cfg.Database.Mysql.Password,
+		cfg.Database.Mysql.Host,
+		cfg.Database.Mysql.Port,
+		cfg.Database.Mysql.Name,
 	)
-
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Failed to connect to database: ", err)
+		pkg.ZapLog.Fatal("Failed to connect to mysql database: " + err.Error())
+	}
+	return db
+}
+
+// Provider untuk MongoDB
+func NewMongoDB(cfg *config.Config) *mongo.Client {
+	mongoURI := fmt.Sprintf("mongodb://%s:%s",
+		cfg.Database.Mongo.Host,
+		cfg.Database.Mongo.Port,
+	)
+	
+	clientOptions := options.Client().ApplyURI(mongoURI)
+	client, err := mongo.Connect(clientOptions)
+	if err != nil {
+		pkg.ZapLog.Fatal("Failed to connect to mongo database: " + err.Error())
 	}
 
-	fmt.Println("Database connection successful")
-	DB = db
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := client.Ping(ctx, nil); err != nil {
+		pkg.ZapLog.Fatal("MongoDB ping failed: " + err.Error())
+	}
+
+	return client
 }

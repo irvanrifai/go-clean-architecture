@@ -39,12 +39,6 @@ var (
 )
 
 func GetConfig() *Config {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Not found .env file")
-
-		return nil
-	}
-
 	return &Config{
 		AppName: os.Getenv("APP_NAME"),
 		AppEnv:  GetEnv(),

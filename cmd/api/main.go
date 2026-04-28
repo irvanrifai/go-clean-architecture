@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
+
+	"github.com/gin-gonic/gin"
 	"github.com/irvanrifai/go-clean-architecture/config"
 	"github.com/irvanrifai/go-clean-architecture/database"
+	"github.com/irvanrifai/go-clean-architecture/internal/delivery/http"
+	"github.com/irvanrifai/go-clean-architecture/internal/delivery/http/handler"
+	"github.com/irvanrifai/go-clean-architecture/internal/repository"
+	"github.com/irvanrifai/go-clean-architecture/internal/usecase"
 	"github.com/irvanrifai/go-clean-architecture/pkg"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.uber.org/fx"
-	"gorm.io/gorm"
 )
 
 func main() {
@@ -19,10 +24,18 @@ func main() {
             config.GetConfig,
             database.NewMySQLDB,
             database.NewMongoDB,
-            // ... provider lain (repository, service)
+			repository.NewUserRepository,
+			usecase.NewUserUsecase,
+			handler.NewUserHandler,
+			http.NewRouter,
         ),
-        fx.Invoke(func(db *gorm.DB, m *mongo.Client) {
-            pkg.ZapLog.Info("All databases are ready!")
-        }),
+        fx.Invoke(func(lc fx.Lifecycle, r *gin.Engine) {
+			lc.Append(fx.Hook{
+				OnStart: func(ctx context.Context) error {
+					go r.Run(":8080")
+					return nil
+				},
+			})
+		}),
     ).Run()
 }

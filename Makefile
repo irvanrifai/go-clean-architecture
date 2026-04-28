@@ -46,7 +46,7 @@ include .env
 export
 
 # URL Database
-DB_URL=postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable
+DB_MYSQL_URL=mysql://$(DB_MYSQL_USER):$(DB_MYSQL_PASSWORD)@tcp($(DB_MYSQL_HOST):$(DB_MYSQL_PORT))/$(DB_MYSQL_NAME)?charset=utf8mb4&parseTime=True&loc=Local
 
 ## Migration: Create new migration with TIMESTAMP
 migrate-create:
@@ -55,10 +55,10 @@ migrate-create:
 
 ## Migration: Run all up migrations
 migrate-up:
-	migrate -path database/migrations -database "$(DB_URL)" -verbose up
+	migrate -path database/migrations -database "$(DB_MYSQL_URL)" -verbose up
 
 ## Migration: Rollback 1 migration
 migrate-down:
-	migrate -path database/migrations -database "$(DB_URL)" -verbose down 1
+	migrate -path database/migrations -database "$(DB_MYSQL_URL)" -verbose down 1
 
 .PHONY: migrate-create migrate-up migrate-down

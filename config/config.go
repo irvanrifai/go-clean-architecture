@@ -50,18 +50,18 @@ func GetConfig() *Config {
 		AppEnv:  GetEnv(),
 		Database: Database{
 			Mysql: MysqlConfig{
-				Host:     os.Getenv("MYSQL_HOST"),
-				User:     os.Getenv("MYSQL_USER"),
-				Password: os.Getenv("MYSQL_PASSWORD"),
-				Name:     os.Getenv("MYSQL_NAME"),
-				Port:     os.Getenv("MYSQL_PORT"),
+				Host:     os.Getenv("DB_MYSQL_HOST"),
+				User:     os.Getenv("DB_MYSQL_USER"),
+				Password: os.Getenv("DB_MYSQL_PASSWORD"),
+				Name:     os.Getenv("DB_MYSQL_NAME"),
+				Port:     os.Getenv("DB_MYSQL_PORT"),
 			},
 			Mongo: MongoConfig{
-				Host:     os.Getenv("MONGO_HOST"),
-				User:     os.Getenv("MONGO_USER"),
-				Password: os.Getenv("MONGO_PASSWORD"),
-				Name:     os.Getenv("MONGO_NAME"),
-				Port:     os.Getenv("MONGO_PORT"),
+				Host:     os.Getenv("DB_MONGO_HOST"),
+				User:     os.Getenv("DB_MONGO_USER"),
+				Password: os.Getenv("DB_MONGO_PASSWORD"),
+				Name:     os.Getenv("DB_MONGO_NAME"),
+				Port:     os.Getenv("DB_MONGO_PORT"),
 			},
 		},
 	}
@@ -85,5 +85,8 @@ func GetEnv() string {
 }
 
 func GetAppName() string {
-	return cfg.AppName
+    if cfg == nil {
+        cfg = GetConfig()
+    }
+    return cfg.AppName
 }

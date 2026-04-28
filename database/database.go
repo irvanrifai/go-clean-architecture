@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/irvanrifai/go-clean-architecture/config"
-	// "github.com/irvanrifai/go-clean-architecture/pkg"
+	"github.com/irvanrifai/go-clean-architecture/pkg"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -15,7 +15,7 @@ var DB *gorm.DB
 func ConnectDB() {
 	err := godotenv.Load()
 	if err != nil {
-		// pkg.ZapLog.Fatal("Error loading .env file")
+		pkg.ZapLog.Fatal("Error loading .env file")
 	}
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
@@ -28,9 +28,9 @@ func ConnectDB() {
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		// pkg.ZapLog.Fatal("Failed to connect to database: " + err.Error())
+		pkg.ZapLog.Fatal("Failed to connect to database: " + err.Error())
 	}
 
-	// pkg.ZapLog.Info("Database connection successful")
+	pkg.ZapLog.Info("Database connection successful")
 	DB = db
 }

@@ -30,7 +30,7 @@ func InitLog() {
 	var encoderConfig zapcore.EncoderConfig
 	if appEnv != "production" {
 		encoderConfig = zap.NewDevelopmentEncoderConfig()
-		encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	} else {
 		encoderConfig = zap.NewProductionEncoderConfig()
 		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
